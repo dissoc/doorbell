@@ -26,12 +26,12 @@ guix package --install-from-file=guix.scm
 * examples
 
 #+BEGIN_SRC sh
-doorbell -h 127.0.0.1 -t 50001,50002,50003 -d 500
+doorbell -h 127.0.0.1 -t 50001,50002,50003,50004 -d 500
 #+END_SRC
 
 * sample nftables config
 #+BEGIN_SRC sh
-Port knocking rules
+# Port knocking rules
 define guarded_ports = {ssh}
 
 table inet portknock {
