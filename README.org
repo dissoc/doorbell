@@ -6,10 +6,10 @@
 
 doorbell is just a simple tool to port knock a host
 
-* examples
+* installation
 
 #+BEGIN_SRC sh
-doorbell
+guix package --install-from-file=guix.scm
 #+END_SRC
 
 * arguments
@@ -21,6 +21,45 @@ doorbell
 -h  host               --host       Specifies the host
 -d                     --delay      Delay in ms between packets sent. Default 100ms
 -e  cmd                --exec       Command to execute after packets sent
+#+END_SRC
+
+* examples
+
+#+BEGIN_SRC sh
+doorbell -h 127.0.0.1 -t 50001,50002,50003 -d 500
+#+END_SRC
+
+* sample nftables config
+#+BEGIN_SRC sh
+Port knocking rules
+define guarded_ports = {ssh}
+
+table inet portknock {
+
+  set clients_ipv4 {
+    type ipv4_addr
+    flags timeout
+  }
+
+  set candidates_ipv4 {
+    type ipv4_addr . inet_service
+    flags timeout
+  }
+
+  chain input {
+    type filter hook input priority -10; policy accept;
+
+    iifname \"lo\" return
+
+    tcp dport 50001 add @candidates_ipv4 {ip  saddr . 50002 timeout 30s}
+    tcp dport 50002 ip  saddr . tcp dport @candidates_ipv4 add @candidates_ipv4 {ip  saddr . 50003 timeout 30s}
+    tcp dport 50003 ip  saddr . tcp dport @candidates_ipv4 add @candidates_ipv4 {ip  saddr . 50004 timeout 30s}
+    tcp dport 50004 ip  saddr . tcp dport @candidates_ipv4 add @clients_ipv4 {ip  saddr timeout 30s} log prefix \"Successful portknock: \"
+    tcp dport $guarded_ports ip  saddr @clients_ipv4 counter accept
+    tcp dport $guarded_ports ct state established,related counter accept
+    tcp dport $guarded_ports counter reject with tcp reset
+  }
+}
 #+END_SRC
 
 * license
