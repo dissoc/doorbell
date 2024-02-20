@@ -1,0 +1,29 @@
+#+TITLE:     doorbell
+#+SUBTITLE:  port knocking untility
+#+AUTHOR:    Justin Bishop
+#+KEYWORDS:  port knocking, firewall, nftables
+#+LANGUAGE:  en
+
+doorbell is just a simple tool to port knock a host
+
+* examples
+
+#+BEGIN_SRC sh
+doorbell
+#+END_SRC
+
+* arguments
+
+#+BEGIN_SRC sh
+-v,                    --version    Display version
+                       --help       Display this help
+-t  port1,port2,portn  --tcp        Send comma separated tcp packets to provided port
+-h  host               --host       Specifies the host
+-d                     --delay      Delay in ms between packets sent. Default 100ms
+-e  cmd                --exec       Command to execute after packets sent
+#+END_SRC
+
+* license
+copyright 2024 Justin Bishop
+GNU GENERAL PUBLIC LICENSE
+Version 3
